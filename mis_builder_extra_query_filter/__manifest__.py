@@ -7,7 +7,7 @@
     """,
     "author": "Solvos",
     "license": "AGPL-3",
-    "version": "11.0.1.0.0",
+    "version": "15.0.1.0.0",
     "website": "https://github.com/solvosci/slv-mis-builder",
     "depends": ["mis_builder_budget"],
     "installable": True,

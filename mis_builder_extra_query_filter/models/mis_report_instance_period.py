@@ -7,12 +7,12 @@ from odoo import api, models
 class MisReportInstancePeriod(models.Model):
     _inherit = "mis.report.instance.period"
 
-    @api.multi
     def _get_additional_query_filter(self, query):
         self.ensure_one()
+        # TODO refactor to expression.AND
         return self._get_additional_query_filter_dict(
             self.report_instance_id.analytic_account_id.id
-        ).get(query.model_id.id, [])
+        ).get(query.model_id.id, []) + super()._get_additional_query_filter(query)
 
     @api.model
     def _get_additional_query_filter_dict(self, analytic_account_id):
