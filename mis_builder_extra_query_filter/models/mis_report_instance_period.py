@@ -19,7 +19,11 @@ class MisReportInstancePeriod(models.Model):
         """
         Add/extends when new models should be covered
         """
-        return {
+        ret_dict = {
             self.env.ref("mis_builder_budget.model_mis_budget_item").id: [("analytic_account_id", "=", analytic_account_id)],
             self.env.ref("analytic.model_account_analytic_line").id: [("account_id", "=", analytic_account_id)],
         }
+        pol = self.env.ref("purchase.model_purchase_order_line", raise_if_not_found=False)
+        if pol:
+            ret_dict.update({pol.id: [("account_analytic_id", "=", analytic_account_id)]})
+        return ret_dict
