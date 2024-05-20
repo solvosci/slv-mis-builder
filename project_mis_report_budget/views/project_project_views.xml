@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="project_mis_report_form_view" model="ir.ui.view">
+        <field name="name">project.project.form</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project_mis_report.project_mis_report_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='mis_report']/group" position="after">
+                <label for="mis_budget_ids"/>
+                <field name="mis_budget_ids" context="{'default_name': name, 'default_report_id': mis_report_template_id, 'default_date_from': date_start, 'default_date_to': date}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
