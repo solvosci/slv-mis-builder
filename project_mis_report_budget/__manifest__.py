@@ -4,17 +4,18 @@
 {
     "name": "Project Mis Report Budget",
     "summary": """
-        Link Project with Mis Report Budget"
+        Link Project with Mis Report Budget
     """,
     "author": "Solvos",
     "license": "AGPL-3",
-    "version": "15.0.1.0.0",
+    "version": "15.0.2.0.0",
     "category": "Project",
     "website": "https://github.com/solvosci/slv-mis-builder",
     "depends": ["project_mis_report","mis_builder_budget"],
     "data": [
         "views/mis_budget_views.xml",
         "views/project_project_views.xml",
+        "views/mis_report_kpi_views.xml",
     ],
     "installable": True,
 }

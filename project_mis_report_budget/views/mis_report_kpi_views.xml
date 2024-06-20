@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="mis_report_view_kpi_form" model="ir.ui.view">
+        <field name="name">mis.report.kpi.form</field>
+        <field name="model">mis.report.kpi</field>
+        <field name="inherit_id" ref="mis_builder_budget.mis_report_view_kpi_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='budgetable']" position="after">
+                <field name="is_margin" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="mis_report_view_form" model="ir.ui.view">
+        <field name="name">mis.report.form</field>
+        <field name="model">mis.report</field>
+        <field name="inherit_id" ref="mis_builder_budget.mis_report_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='budgetable']" position="after">
+                <field name="is_margin" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
