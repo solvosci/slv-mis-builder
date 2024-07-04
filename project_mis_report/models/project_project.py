@@ -64,4 +64,18 @@ class ProjectProject(models.Model):
                 'duration': 1,
             })
             count_month += 1
+
+        total_period_id = instance_id.period_ids.create({
+            'report_instance_id': instance_id.id,
+            'name': 'TOTAL',
+            'source': 'sumcol',
+            'mode': 'none'
+        })
+        for period_id in instance_id.period_ids.filtered(lambda x: x.source == 'actuals'):
+            self.env['mis.report.instance.period.sum'].create({
+                'sign': '+',
+                'period_id': total_period_id.id,
+                'period_to_sum_id': period_id.id,
+            })
+
         self.mis_report_instance_id = instance_id
