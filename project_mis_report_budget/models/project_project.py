@@ -9,6 +9,7 @@ class ProjectProject(models.Model):
     _inherit = "project.project"
 
     mis_budget_ids = fields.One2many('mis.budget', 'project_id', string="Budgets")
+    last_margin = fields.Float()
 
     def auto_create_mis_instance(self):
         super().auto_create_mis_instance()
@@ -39,3 +40,44 @@ class ProjectProject(models.Model):
                     'amount': self.margin * 100,
                     'analytic_account_id': self.analytic_account_id.id
                 })
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'last_close_date' in vals and vals['last_close_date']:
+            for record in self:
+                real_expenses = 0
+                real_debit_expenses = 0
+                future_expenses = 0
+                hour_expenses = 0
+
+                incomes = sum(record.mis_budget_ids.item_ids.filtered(lambda x: x.kpi_expression_id.kpi_id.kpi_type == 'income').mapped('amount'))
+                future_expenses = sum(record.mis_budget_ids.item_ids.filtered(lambda x: x.date_to > record.last_close_date and x.kpi_expression_id.kpi_id.kpi_type == 'expense').mapped('amount'))
+
+                hour_expenses = -(sum(self.env['account.analytic.line'].search(['&',
+                                                    ('date', '<=', record.last_close_date),
+                                                    ('project_id', '=', record.id),
+                ]).mapped('amount')))
+
+                line_ids = self.env['account.move.line'].sudo().search(['&', '&',
+                                                    ('account_id', 'in', record.company_id.expense_account_ids.ids),
+                                                    ('date', '<=', record.last_close_date),
+                                                    ('analytic_account_id', '=', record.analytic_account_id.id),
+                ])
+                line_debit_ids = self.env['account.move.line'].sudo().search(['&', '&',
+                                                    ('account_id', 'in', record.company_id.expense_debit_account_ids.ids),
+                                                    ('date', '<=', record.last_close_date),
+                                                    ('analytic_account_id', '=', record.analytic_account_id.id),
+                ])
+                real_expenses = sum(line_ids.mapped('debit')) - sum(line_ids.mapped('credit'))
+                real_debit_expenses = sum(line_debit_ids.mapped('debit'))
+                all_expenses = real_expenses + real_debit_expenses + future_expenses + hour_expenses
+
+                if incomes:
+                    record.last_margin = ((incomes - all_expenses) / incomes)
+                    new_margin = round(100 * record.last_margin, 2)
+
+                    budget_item_id = record.mis_budget_ids.item_ids.search(['&', ('kpi_expression_id.kpi_id.kpi_type', '=', 'margin'), ('date_to', '>=', record.last_close_date)])
+                    budget_item_id.sudo().write({
+                        'amount': new_margin
+                    })
+        return res

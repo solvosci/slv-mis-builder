@@ -13,4 +13,16 @@
         </field>
     </record>
 
+    <record id="project_custom_fields_form_view" model="ir.ui.view">
+        <field name="name">project.project.form</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project_profitability_fields.project_custom_fields_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='economic_data_group']" position="after">
+                <group>
+                    <field name="last_margin" readonly="1" widget="percentage"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
 </odoo>
