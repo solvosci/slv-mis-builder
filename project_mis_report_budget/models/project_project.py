@@ -13,7 +13,7 @@ class ProjectProject(models.Model):
     def auto_create_mis_instance(self):
         super().auto_create_mis_instance()
 
-        margin_kpi_ids = self.mis_report_template_id.kpi_ids.filtered(lambda x: x.is_margin)
+        margin_kpi_ids = self.mis_report_template_id.kpi_ids.filtered(lambda x: x.kpi_type == 'margin')
         expression_id = margin_kpi_ids and margin_kpi_ids.expression_ids[0].id or False
 
         if expression_id:

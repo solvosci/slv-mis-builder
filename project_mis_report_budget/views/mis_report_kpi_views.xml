@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="mis_builder_budget.mis_report_view_kpi_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='budgetable']" position="after">
-                <field name="is_margin" />
+                <field name="kpi_type" />
             </xpath>
         </field>
     </record>
@@ -18,7 +18,7 @@
         <field name="inherit_id" ref="mis_builder_budget.mis_report_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='budgetable']" position="after">
-                <field name="is_margin" optional="show"/>
+                <field name="kpi_type" optional="show"/>
             </xpath>
         </field>
     </record>
