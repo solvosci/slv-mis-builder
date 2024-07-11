@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-20 07:45+0000\n"
-"PO-Revision-Date: 2024-06-20 07:45+0000\n"
+"POT-Creation-Date: 2024-07-12 11:25+0000\n"
+"PO-Revision-Date: 2024-07-12 11:25+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -36,6 +36,38 @@ msgid "Budgets"
 msgstr "Presupuestos"
 
 #. module: project_mis_report_budget
+#: model:ir.model,name:project_mis_report_budget.model_res_company
+msgid "Companies"
+msgstr "Compañías"
+
+#. module: project_mis_report_budget
+#: model:ir.model,name:project_mis_report_budget.model_res_config_settings
+msgid "Config Settings"
+msgstr "Opciones de configuración"
+
+#. module: project_mis_report_budget
+#: model:ir.model.fields.selection,name:project_mis_report_budget.selection__mis_report_kpi__kpi_type__expense
+msgid "Expense"
+msgstr "Gastos"
+
+#. module: project_mis_report_budget
+#: model:ir.model.fields,field_description:project_mis_report_budget.field_res_company__expense_account_ids
+#: model:ir.model.fields,field_description:project_mis_report_budget.field_res_config_settings__expense_account_ids
+msgid "Expense Account"
+msgstr "Cuentas de gastos"
+
+#. module: project_mis_report_budget
+#: model:ir.model.fields,field_description:project_mis_report_budget.field_res_company__expense_debit_account_ids
+#: model:ir.model.fields,field_description:project_mis_report_budget.field_res_config_settings__expense_debit_account_ids
+msgid "Expense Debit Account"
+msgstr "Cuentas de gastos de debito"
+
+#. module: project_mis_report_budget
+#: model:ir.model.fields.selection,name:project_mis_report_budget.selection__mis_report_kpi__kpi_type__income
+msgid "Income"
+msgstr "Ingresos"
+
+#. module: project_mis_report_budget
 #: model:ir.model.fields,field_description:project_mis_report_budget.field_mis_report_kpi__is_margin
 msgid "Is Margin"
 msgstr "Es margen"
@@ -45,6 +77,16 @@ msgstr "Es margen"
 #, python-format
 msgid "KPI must be budgetable"
 msgstr "El KPI debe ser presupuestable"
+
+#. module: project_mis_report_budget
+#: model:ir.model.fields,field_description:project_mis_report_budget.field_mis_report_kpi__kpi_type
+msgid "Kpi Type"
+msgstr "Tipo de KPI"
+
+#. module: project_mis_report_budget
+#: model:ir.model.fields,field_description:project_mis_report_budget.field_project_project__last_margin
+msgid "Last Margin"
+msgstr "Último margen"
 
 #. module: project_mis_report_budget
 #: code:addons/project_mis_report_budget/models/project_project.py:0
@@ -64,6 +106,11 @@ msgid "MIS Report KPI"
 msgstr "KPI de informe MIS"
 
 #. module: project_mis_report_budget
+#: model:ir.model.fields.selection,name:project_mis_report_budget.selection__mis_report_kpi__kpi_type__margin
+msgid "Margin"
+msgstr "Margen"
+
+#. module: project_mis_report_budget
 #: code:addons/project_mis_report_budget/models/mis_report_kpi.py:0
 #, python-format
 msgid "Only one KPI can be margin"
@@ -74,3 +121,8 @@ msgstr "Solo un KPI puede ser margen"
 #: model:ir.model.fields,field_description:project_mis_report_budget.field_mis_budget__project_id
 msgid "Project"
 msgstr "Proyecto"
+
+#. module: project_mis_report_budget
+#: model_terms:ir.ui.view,arch_db:project_mis_report_budget.res_config_settings_view_form
+msgid "Project Control"
+msgstr "Control de proyecto"
