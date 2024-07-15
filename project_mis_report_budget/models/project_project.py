@@ -40,6 +40,7 @@ class ProjectProject(models.Model):
                     'amount': self.margin * 100,
                     'analytic_account_id': self.analytic_account_id.id
                 })
+            budget_id.action_confirm()
 
     def write(self, vals):
         res = super().write(vals)
