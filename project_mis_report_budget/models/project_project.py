@@ -51,8 +51,9 @@ class ProjectProject(models.Model):
                 future_expenses = 0
                 hour_expenses = 0
 
-                incomes = sum(record.mis_budget_ids.item_ids.filtered(lambda x: x.kpi_expression_id.kpi_id.kpi_type == 'income').mapped('amount'))
-                future_expenses = sum(record.mis_budget_ids.item_ids.filtered(lambda x: x.date_to > record.last_close_date and x.kpi_expression_id.kpi_id.kpi_type == 'expense').mapped('amount'))
+                budget_ids = record.mis_budget_ids.filtered(lambda x: x.state == 'confirmed')
+                incomes = sum(budget_ids.item_ids.filtered(lambda x: x.kpi_expression_id.kpi_id.kpi_type == 'income').mapped('amount'))
+                future_expenses = sum(budget_ids.item_ids.filtered(lambda x: x.date_to > record.last_close_date and x.kpi_expression_id.kpi_id.kpi_type == 'expense').mapped('amount'))
 
                 hour_expenses = -(sum(self.env['account.analytic.line'].search(['&',
                                                     ('date', '<=', record.last_close_date),
@@ -78,7 +79,7 @@ class ProjectProject(models.Model):
                     record.last_margin = ((incomes - all_expenses) / incomes)
                     new_margin = round(100 * record.last_margin, 2)
 
-                    budget_item_id = record.mis_budget_ids.item_ids.search(['&', ('kpi_expression_id.kpi_id.kpi_type', '=', 'margin'), ('date_to', '>=', record.last_close_date)])
+                    budget_item_id = budget_ids.item_ids.search(['&', ('kpi_expression_id.kpi_id.kpi_type', '=', 'margin'), ('date_to', '>=', record.last_close_date)])
                     budget_item_id.sudo().write({
                         'amount': new_margin
                     })
