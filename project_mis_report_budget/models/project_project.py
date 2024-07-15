@@ -64,10 +64,11 @@ class ProjectProject(models.Model):
                                                     ('date', '<=', record.last_close_date),
                                                     ('analytic_account_id', '=', record.analytic_account_id.id),
                 ])
-                line_debit_ids = self.env['account.move.line'].sudo().search(['&', '&',
+                line_debit_ids = self.env['account.move.line'].sudo().search([
                                                     ('account_id', 'in', record.company_id.expense_debit_account_ids.ids),
                                                     ('date', '<=', record.last_close_date),
                                                     ('analytic_account_id', '=', record.analytic_account_id.id),
+                                                    ('analytic_mrp_from_child', '!=', True),
                 ])
                 real_expenses = sum(line_ids.mapped('debit')) - sum(line_ids.mapped('credit'))
                 real_debit_expenses = sum(line_debit_ids.mapped('debit'))

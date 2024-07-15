@@ -8,10 +8,15 @@
     """,
     "author": "Solvos",
     "license": "AGPL-3",
-    "version": "15.0.2.2.1",
+    "version": "15.0.2.2.2",
     "category": "Project",
     "website": "https://github.com/solvosci/slv-mis-builder",
-    "depends": ["project_mis_report","mis_builder_budget", "project_profitability_fields"],
+    "depends": [
+        "project_mis_report",
+        "mis_builder_budget",
+        "project_profitability_fields",
+        "mrp_project_analytic"
+    ],
     "data": [
         "views/mis_budget_views.xml",
         "views/project_project_views.xml",
