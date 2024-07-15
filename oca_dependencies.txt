@@ -1,2 +1,3 @@
 mis-builder
-slv-project
+slv-project https://github.com/solvosci/slv-project
+slv-manufacture https://github.com/solvosci/slv-manufacture
