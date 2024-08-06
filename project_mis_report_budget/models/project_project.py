@@ -48,12 +48,14 @@ class ProjectProject(models.Model):
             for record in self:
                 real_expenses = 0
                 real_debit_expenses = 0
-                future_expenses = 0
+                expenses = 0
                 hour_expenses = 0
 
                 budget_ids = record.mis_budget_ids.filtered(lambda x: x.state == 'confirmed')
                 incomes = sum(budget_ids.item_ids.filtered(lambda x: x.kpi_expression_id.kpi_id.kpi_type == 'income').mapped('amount'))
-                future_expenses = sum(budget_ids.item_ids.filtered(lambda x: x.date_to > record.last_close_date and x.kpi_expression_id.kpi_id.kpi_type == 'expense').mapped('amount'))
+                expenses = sum(budget_ids.item_ids.filtered(lambda x: x.kpi_expression_id.kpi_id.kpi_type == 'expense').mapped('amount'))
+                past_expenses = sum(budget_ids.item_ids.filtered(lambda x: x.date_to <= record.last_close_date and x.kpi_expression_id.kpi_id.kpi_type == 'expense').mapped('amount'))
+                expenses -= past_expenses
 
                 hour_expenses = -(sum(self.env['account.analytic.line'].search(['&',
                                                     ('date', '<=', record.last_close_date),
@@ -73,7 +75,7 @@ class ProjectProject(models.Model):
                 ])
                 real_expenses = sum(line_ids.mapped('debit')) - sum(line_ids.mapped('credit'))
                 real_debit_expenses = sum(line_debit_ids.mapped('debit'))
-                all_expenses = real_expenses + real_debit_expenses + future_expenses + hour_expenses
+                all_expenses = real_expenses + real_debit_expenses + expenses + hour_expenses
 
                 if incomes:
                     record.last_margin = ((incomes - all_expenses) / incomes)
