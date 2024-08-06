@@ -79,3 +79,13 @@ class ProjectProject(models.Model):
             })
 
         self.mis_report_instance_id = instance_id
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'date' in vals and vals['date']:
+            for record in self:
+                if record.date + relativedelta(months=1) > record.mis_report_instance_id.period_ids[-2].date_to:
+                    record.mis_report_instance_id.period_ids.filtered(lambda x: x.source == 'sumcol').unlink()
+                    record.mis_report_instance_id.unlink()
+                    record.auto_create_mis_instance()
+        return res
