@@ -24,6 +24,9 @@
         <field name="mode">primary</field>
         <field name="priority">99</field>
         <field name="arch" type="xml">
+            <field name="name" position="before">
+                <field name="is_margin" groups="base.group_no_one"/>
+            </field>
             <field name="state" position="after">
                 <button name="action_duplicate" icon="fa-copy" class="p-0" type="object" title="Duplicate"/>
             </field>
