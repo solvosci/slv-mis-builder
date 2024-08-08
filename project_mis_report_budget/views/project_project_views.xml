@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <xpath expr="//page[@name='mis_report']/group" position="after">
                 <label for="mis_budget_ids"/>
-                <field name="mis_budget_ids" context="{'default_name': name, 'default_report_id': mis_report_template_id, 'default_date_from': date_start, 'default_date_to': date}"/>
+                <field name="mis_budget_ids" context="{'tree_view_ref':'project_mis_report_budget.mis_budget_tree_view', 'default_name': name, 'default_report_id': mis_report_template_id, 'default_date_from': date_start, 'default_date_to': date}"/>
             </xpath>
         </field>
     </record>

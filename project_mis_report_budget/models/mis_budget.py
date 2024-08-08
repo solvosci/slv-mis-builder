@@ -10,3 +10,7 @@ class MisBudget(models.Model):
     project_id = fields.Many2one('project.project')
     analytic_account_project_id = fields.Many2one('account.analytic.account', related='project_id.analytic_account_id')
     is_margin = fields.Boolean()
+
+    def action_duplicate(self):
+        budget_id = self.copy()
+        budget_id.action_draft()

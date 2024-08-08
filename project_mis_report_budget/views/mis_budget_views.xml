@@ -17,4 +17,17 @@
         </field>
     </record>
 
+    <record id="mis_budget_tree_view" model="ir.ui.view">
+        <field name="name">mis.budget.tree</field>
+        <field name="model">mis.budget</field>
+        <field name="inherit_id" ref="mis_builder_budget.mis_budget_tree_view" />
+        <field name="mode">primary</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <field name="state" position="after">
+                <button name="action_duplicate" icon="fa-copy" class="p-0" type="object" title="Duplicate"/>
+            </field>
+        </field>
+    </record>
+
 </odoo>
