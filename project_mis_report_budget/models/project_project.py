@@ -49,7 +49,7 @@ class ProjectProject(models.Model):
     def write(self, vals):
         res = super().write(vals)
         if 'last_close_date' in vals and vals['last_close_date']:
-            for record in self:
+            for record in self.filtered(lambda x: x.last_close_date == x.date and x.mis_report_instance_id):
                 real_expenses = 0
                 real_debit_expenses = 0
                 expenses = 0
@@ -89,4 +89,9 @@ class ProjectProject(models.Model):
                     budget_item_id.sudo().write({
                         'amount': new_margin
                     })
+        if 'last_margin' in vals and vals['last_margin']:
+            for record in self:
+                margin_id = record.mis_budget_ids.filtered(lambda x: x.is_margin and x.state == 'confirmed')
+                for item in margin_id.item_ids.filtered(lambda x: x.date_from > record.last_close_date):
+                    item.amount = record.last_margin * 100
         return res
