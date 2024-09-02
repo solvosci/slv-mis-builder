@@ -42,6 +42,9 @@ class ProjectProject(models.Model):
             raise ValidationError(
                 _('The Analytical Account field must be covered')
             )
+        if not self.date_start or not self.date:
+            raise ValidationError(_('The Dates field must be covered before generating the MIS report.'))
+        
         instance_id = self.mis_report_instance_id.create({
             'name': _('Project: %s') % self.name,
             'report_id': self.mis_report_template_id.id,
