@@ -77,7 +77,8 @@ class ProjectProject(models.Model):
 
                     line_debit_ids = self.env['account.move.line'].sudo().search([
                                                     ('account_id', 'in', record.company_id.expense_debit_account_ids.ids),
-                                                    ('date', '<=', record.last_close_date),
+                                                    ('date', '>=', month_start),
+                                                    ('date', '<=', month_end),
                                                     ('analytic_account_id', '=', record.analytic_account_id.id),
                                                     ('analytic_mrp_from_child', '!=', True),
                                                     ('move_id.state', 'not in', ['draft', 'cancel']),
