@@ -17,7 +17,7 @@ class ProjectProject(models.Model):
         expression_id = margin_kpi_ids and margin_kpi_ids.expression_ids[0].id or False
 
         if expression_id:
-            budget_id = self.mis_budget_ids.filtered(lambda x: x.is_margin)
+            budget_id = self.mis_budget_ids.filtered(lambda x: x.is_margin and x.state == 'confirmed')
 
             if not budget_id:
                 budget_id = self.env['mis.budget'].create({
