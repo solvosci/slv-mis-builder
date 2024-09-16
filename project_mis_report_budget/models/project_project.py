@@ -93,7 +93,7 @@ class ProjectProject(models.Model):
                         else:
                             record.last_margin = ((incomes - month_income) - all_expenses) / (incomes - month_income)
 
-                        new_margin = round(100 * record.last_margin, 2)
+                        new_margin = round(100 * record.last_margin, 6)
                         budget_item_id = budget_ids.item_ids.filtered(lambda x: x.kpi_expression_id.kpi_id.kpi_type == 'margin' and x.date_to >= record.last_close_date)
                         budget_item_id.sudo().write({
                             'amount': new_margin
