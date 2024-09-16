@@ -49,7 +49,7 @@ class ProjectProject(models.Model):
     def write(self, vals):
         res = super().write(vals)
         if 'last_close_date' in vals and vals['last_close_date']:
-            for record in self.filtered(lambda x: x.last_close_date == x.date and x.mis_report_instance_id):
+            for record in self.filtered(lambda x: x.last_close_date == x.date and x.mis_report_instance_id and x.estimated_income):
                 real_expenses = 0
                 real_debit_expenses = 0
                 expenses = 0
