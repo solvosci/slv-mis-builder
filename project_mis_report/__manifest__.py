@@ -8,7 +8,7 @@
     """,
     "author": "Solvos",
     "license": "AGPL-3",
-    "version": "15.0.1.2.1",
+    "version": "15.0.1.2.2",
     "category": "Project",
     "website": "https://github.com/solvosci/slv-mis-builder",
     "depends": ["project","mis_builder"],
