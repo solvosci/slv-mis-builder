@@ -1,0 +1,74 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* mis_builder_report_drilldown_custom
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-24 06:43+0000\n"
+"PO-Revision-Date: 2025-03-24 06:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: mis_builder_report_drilldown_custom
+#: model_terms:ir.ui.view,arch_db:mis_builder_report_drilldown_custom.mis_report_view_kpi_form
+msgid "Account Field"
+msgstr ""
+
+#. module: mis_builder_report_drilldown_custom
+#: code:addons/mis_builder_report_drilldown_custom/models/expression_evaluator.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_drilldown_custom/models/expression_evaluator.py:0
+#, python-format
+msgid "Column %s with move lines source must have from/to dates."
+msgstr ""
+
+#. module: mis_builder_report_drilldown_custom
+#: model:ir.model.fields,field_description:mis_builder_report_drilldown_custom.field_mis_report_kpi__drill_expression_id
+msgid "Drill Expression"
+msgstr ""
+
+#. module: mis_builder_report_drilldown_custom
+#: model:ir.model.fields,field_description:mis_builder_report_drilldown_custom.field_mis_report_kpi__drill_field_account_id
+msgid "Drill Field Account"
+msgstr ""
+
+#. module: mis_builder_report_drilldown_custom
+#: model:ir.model.fields,field_description:mis_builder_report_drilldown_custom.field_mis_report_kpi__drill_view_id
+msgid "Drill View"
+msgstr ""
+
+#. module: mis_builder_report_drilldown_custom
+#: model_terms:ir.ui.view,arch_db:mis_builder_report_drilldown_custom.mis_report_view_kpi_form
+msgid "Drilldown Custom"
+msgstr ""
+
+#. module: mis_builder_report_drilldown_custom
+#: model_terms:ir.ui.view,arch_db:mis_builder_report_drilldown_custom.mis_report_view_kpi_form
+msgid "Expression"
+msgstr ""
+
+#. module: mis_builder_report_drilldown_custom
+#: model_terms:ir.ui.view,arch_db:mis_builder_report_drilldown_custom.mis_report_view_kpi_form
+msgid "List View"
+msgstr ""
+
+#. module: mis_builder_report_drilldown_custom
+#: model:ir.model,name:mis_builder_report_drilldown_custom.model_mis_report_instance
+msgid "MIS Report Instance"
+msgstr ""
+
+#. module: mis_builder_report_drilldown_custom
+#: model:ir.model,name:mis_builder_report_drilldown_custom.model_mis_report_kpi
+msgid "MIS Report KPI"
+msgstr ""
+
+#. module: mis_builder_report_drilldown_custom
+#: model:ir.model.fields,field_description:mis_builder_report_drilldown_custom.field_mis_report_kpi__drill_model_id
+#: model:ir.model.fields,field_description:mis_builder_report_drilldown_custom.field_mis_report_kpi__drill_model_name
+msgid "Model"
+msgstr ""
