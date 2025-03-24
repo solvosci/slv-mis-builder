@@ -86,7 +86,7 @@ class ProjectProject(models.Model):
     def write(self, vals):
         res = super().write(vals)
         if 'date' in vals and vals['date']:
-            for record in self:
+            for record in self.filtered(lambda x: x.mis_report_instance_id):
                 if record.date + relativedelta(months=1) > record.mis_report_instance_id.period_ids[-2].date_to:
                     record.mis_report_instance_id.period_ids.filtered(lambda x: x.source == 'sumcol').unlink()
                     record.mis_report_instance_id.unlink()
