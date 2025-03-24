@@ -92,3 +92,7 @@ class ProjectProject(models.Model):
                     record.mis_report_instance_id.unlink()
                     record.auto_create_mis_instance()
         return res
+
+    def action_mis_report_preview(self):
+        self.ensure_one()
+        return self.mis_report_instance_id.preview()
