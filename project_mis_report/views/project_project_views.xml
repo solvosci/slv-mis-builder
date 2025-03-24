@@ -29,4 +29,23 @@
         </field>
     </record>
 
+    <record id="project_buttom_kanban_view" model="ir.ui.view">
+        <field name="name">project.project.kanban</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.view_project_kanban" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="mis_report_instance_id" invisible="1"/>
+            </xpath>
+            <xpath expr="//span[hasclass('o_text_overflow')]" position="before">
+                <a 
+                    name="action_mis_report_preview"
+                    type="object"
+                    class="o_text_overflow fa fa-bar-chart-o pt-1"
+                    attrs="{'invisible': [('mis_report_instance_id', '=', False)]}"
+                />
+            </xpath>
+        </field>
+    </record> 
+
 </odoo>
