@@ -1,3 +1,4 @@
 mis-builder
+reporting-engine
 slv-project https://github.com/solvosci/slv-project
 slv-manufacture https://github.com/solvosci/slv-manufacture

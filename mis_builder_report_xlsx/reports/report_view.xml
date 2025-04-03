@@ -1,0 +1,13 @@
+
+<odoo>
+
+    <record id="action_project_mis_report_xlsx" model="ir.actions.report">
+        <field name="name">Cumulative Total</field>
+        <field name="model">project.mis.export.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">project_mis_xlsx_report.project_mis</field>
+        <field name="binding_model_id" ref="mis_builder_report_xlsx.model_project_mis_export_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

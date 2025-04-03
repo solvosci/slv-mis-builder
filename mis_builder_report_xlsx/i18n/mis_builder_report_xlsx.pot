@@ -1,0 +1,260 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* mis_builder_report_xlsx
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-11 06:24+0000\n"
+"PO-Revision-Date: 2025-04-11 06:24+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: mis_builder_report_xlsx
+#: model:ir.model.fields,field_description:mis_builder_report_xlsx.field_project_mis_export_wizard__account_analytic_ids
+msgid "Analytic Accounts"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#, python-format
+msgid "Billing"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: model_terms:ir.ui.view,arch_db:mis_builder_report_xlsx.project_mis_export_wizard_form
+msgid "Cancel"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: model:ir.model.fields,field_description:mis_builder_report_xlsx.field_project_mis_export_wizard__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: model:ir.model.fields,field_description:mis_builder_report_xlsx.field_project_mis_export_wizard__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/models/project_project.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/models/project_project.py:0
+#: model:ir.actions.report,name:mis_builder_report_xlsx.action_project_mis_report_xlsx
+#: model:ir.actions.server,name:mis_builder_report_xlsx.action_project_export_xlsx
+#: model:ir.ui.menu,name:mis_builder_report_xlsx.menu_project_export_xlsx
+#, python-format
+msgid "Cumulative Total"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: model:ir.model.fields,field_description:mis_builder_report_xlsx.field_project_mis_export_wizard__date_from
+msgid "Date From"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: model:ir.model.fields,field_description:mis_builder_report_xlsx.field_project_mis_export_wizard__date_to
+msgid "Date To"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: model:ir.model.fields,field_description:mis_builder_report_xlsx.field_project_mis_export_wizard__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#, python-format
+msgid "Expense"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: model_terms:ir.ui.view,arch_db:mis_builder_report_xlsx.project_mis_export_wizard_form
+msgid "Export"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: model:ir.model.fields,field_description:mis_builder_report_xlsx.field_project_mis_export_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#, python-format
+msgid "Income"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#, python-format
+msgid "Inventory Change"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#, python-format
+msgid "Labor"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: model:ir.model.fields,field_description:mis_builder_report_xlsx.field_project_mis_export_wizard____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: model:ir.model.fields,field_description:mis_builder_report_xlsx.field_project_mis_export_wizard__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: model:ir.model.fields,field_description:mis_builder_report_xlsx.field_project_mis_export_wizard__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#, python-format
+msgid "Licenses"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#, python-format
+msgid "Materials"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: model:ir.model,name:mis_builder_report_xlsx.model_project_project
+msgid "Project"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: model:ir.model.fields,field_description:mis_builder_report_xlsx.field_project_mis_export_wizard__project_ids
+msgid "Projects"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#, python-format
+msgid "Result"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#, python-format
+msgid "Sheet 1"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#, python-format
+msgid "Subcontracting"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#, python-format
+msgid "TOTALS"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#, python-format
+msgid "Total Cumulate"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#, python-format
+msgid "Total Cumulate Expense"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#, python-format
+msgid "Total Cumulate Income"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#, python-format
+msgid "Travel and Other"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: model:ir.model,name:mis_builder_report_xlsx.model_report_project_mis_xlsx_report_project_mis
+msgid "XLSX model report"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#, python-format
+msgid "Yearly Cumulate"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#, python-format
+msgid "Yearly Cumulate Expense"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: code:addons/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#: code:addons/slv-mis-builder-2/mis_builder_report_xlsx/reports/report_xlsx.py:0
+#, python-format
+msgid "Yearly Cumulate Income"
+msgstr ""
+
+#. module: mis_builder_report_xlsx
+#: model:ir.model,name:mis_builder_report_xlsx.model_project_mis_export_wizard
+msgid "project.mis.export.wizard"
+msgstr ""
