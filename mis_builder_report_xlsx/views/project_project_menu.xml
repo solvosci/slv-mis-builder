@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_project_export_xlsx" model="ir.actions.server">
+        <field name="name">Cumulative Total</field>
+        <field name="model_id" ref="project.model_project_project"/>
+        <field name="binding_model_id" ref="project.model_project_project" />
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.action_project_export_xlsx()
+        </field>
+    </record>
+
+    <menuitem
+        parent="project.menu_project_report"
+        action="action_project_export_xlsx"
+        id="menu_project_export_xlsx"
+        name="Cumulative Total"
+        sequence="50"
+    />
+
+</odoo>

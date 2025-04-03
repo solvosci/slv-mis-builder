@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_project_mis_export,project_mis_export user,mis_builder_report_xlsx.model_project_mis_export_wizard,,1,1,1,1
