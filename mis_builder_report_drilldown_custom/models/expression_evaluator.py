@@ -28,7 +28,7 @@ class ProjectKpiExpressionEvaluator(ExpressionEvaluator):
                 replaced_expr = expr
             val = mis_safe_eval(replaced_expr, locals_dict)
             vals.append(val)
-            if expression.kpi_id.drill_expression_id:
+            if expression and expression.kpi_id and expression.kpi_id.drill_expression_id:
                 custom = True
                 drilldown_args.append({"expr": "custom"})
         if custom:
