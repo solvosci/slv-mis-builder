@@ -47,7 +47,7 @@ class MisReportInstance(models.Model):
     def drilldown(self, arg):
         self.ensure_one()
         expr = arg.get("expr")
-        kpi_id = self.env['mis.report.kpi'].browse(arg.get("kpi_id")).exists()
+        kpi_id = self.env['mis.report.kpi'].sudo().browse(arg.get("kpi_id")).exists()
         if expr == 'custom':
             period_id = arg.get("period_id")
             account_id = self.analytic_account_id
