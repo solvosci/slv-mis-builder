@@ -37,15 +37,17 @@
             <xpath expr="//field[@name='name']" position="after">
                 <field name="mis_report_instance_id" invisible="1"/>
             </xpath>
-            <xpath expr="//span[hasclass('o_text_overflow')]" position="before">
-                <a 
-                    name="action_mis_report_preview"
-                    type="object"
-                    class="o_text_overflow fa fa-bar-chart-o pt-1"
-                    attrs="{'invisible': [('mis_report_instance_id', '=', False)]}"
-                />
+            <xpath expr="//field[@name='activity_ids']" position="after">
+                <div class="o_project_kanban_boxes" attrs="{'invisible': [('mis_report_instance_id', '=', False)]}">
+                    <a class="o_project_kanban_box" name="action_mis_report_preview" type="object">
+                        <div>
+                            <i class="fa fa-bar-chart-o"/>
+                            <span class="o_label">Preview</span>
+                        </div>
+                    </a>
+                </div>
             </xpath>
         </field>
-    </record> 
+    </record>
 
 </odoo>
