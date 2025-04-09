@@ -5,18 +5,19 @@
         <field name="name">mis.report.kpi.form</field>
         <field name="model">mis.report.kpi</field>
         <field name="inherit_id" ref="mis_builder.mis_report_view_kpi_form" />
+        <field name="groups_id" eval="[(4,ref('base.group_erp_manager'))]" />
         <field name="arch" type="xml">
             <xpath expr="//notebook/page" position="inside">
                 <group string="Drilldown Custom">
                     <field name="drill_expression_id" domain="[('report_id', '=', report_id)]" string="Expression"/>
                     <field name="drill_model_id" invisible="1"/>
                     <field name="drill_model_name" invisible="1"/>
-                    <field name="drill_view_id" 
+                    <field name="drill_view_id"
                         domain="[('model', '=', drill_model_name), ('type', '=', 'tree')]"
                         attrs="{'readonly': [('drill_model_name', '=', False)]}"
                         string="List View"
                     />
-                    <field name="drill_field_account_id" 
+                    <field name="drill_field_account_id"
                         domain="[('model_id', '=', drill_model_id)]"
                         attrs="{'readonly': [('drill_model_id', '=', False)]}"
                         string="Account Field"
