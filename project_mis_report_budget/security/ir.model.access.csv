@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_mis_budget_item_admin,project_mis_budget_item admin,mis_builder_budget.model_mis_budget_item,project_mis_report_budget.group_mis_budget_item_admin,1,1,1,1
