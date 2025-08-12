@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-02 12:53+0000\n"
-"PO-Revision-Date: 2024-09-02 12:53+0000\n"
+"POT-Creation-Date: 2025-08-25 07:38+0000\n"
+"PO-Revision-Date: 2025-08-25 07:38+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -77,6 +77,7 @@ msgstr ""
 
 #. module: project_mis_report_budget
 #: code:addons/project_mis_report_budget/models/mis_report_kpi.py:0
+#: code:addons/slv-mis-builder-2/project_mis_report_budget/models/mis_report_kpi.py:0
 #, python-format
 msgid "KPI must be budgetable"
 msgstr ""
@@ -94,6 +95,8 @@ msgstr ""
 #. module: project_mis_report_budget
 #: code:addons/project_mis_report_budget/models/project_project.py:0
 #: code:addons/project_mis_report_budget/models/project_project.py:0
+#: code:addons/slv-mis-builder-2/project_mis_report_budget/models/project_project.py:0
+#: code:addons/slv-mis-builder-2/project_mis_report_budget/models/project_project.py:0
 #, python-format
 msgid "MARGINS"
 msgstr ""
@@ -114,7 +117,13 @@ msgid "Margin"
 msgstr ""
 
 #. module: project_mis_report_budget
+#: model:res.groups,name:project_mis_report_budget.group_mis_budget_item_admin
+msgid "MIS Budget: can manage budget items"
+msgstr ""
+
+#. module: project_mis_report_budget
 #: code:addons/project_mis_report_budget/models/mis_report_kpi.py:0
+#: code:addons/slv-mis-builder-2/project_mis_report_budget/models/mis_report_kpi.py:0
 #, python-format
 msgid "Only one KPI can be margin"
 msgstr ""
