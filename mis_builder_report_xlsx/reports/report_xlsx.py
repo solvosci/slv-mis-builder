@@ -60,7 +60,7 @@ class ProjectMisXlsxReport(models.AbstractModel):
         return self._get_cost_by_account_codes(analytic, first_day, last_day, ['607000%', '607002%'])
 
     def get_license_cost(self, analytic, first_day, last_day):
-        return self._get_cost_by_account_codes(analytic, first_day, last_day, ['621000%'])
+        return self._get_cost_by_account_codes(analytic, first_day, last_day, ['621000%', '621006%'])
 
     def get_travel_and_other_cost(self, analytic, first_day, last_day):
         return self._get_cost_by_account_codes(analytic, first_day, last_day, [
