@@ -44,6 +44,19 @@ class ProjectMisXlsxReport(models.AbstractModel):
         lines = self.env['account.move.line'].search(base_domain)
         return sum(lines.mapped('debit')) - sum(lines.mapped('credit'))
 
+    def _get_credit_by_account_codes(self, analytic, first_day, last_day, account_codes):
+        base_domain = [
+            ('analytic_account_id', '=', analytic.id),
+            ('date', '>=', first_day),
+            ('date', '<=', last_day),
+        ]
+        if account_codes:
+            account_domain = expression.OR([[('account_id.code', 'like', code)] for code in account_codes])
+            base_domain = expression.AND([base_domain, account_domain])
+
+        lines = self.env['account.move.line'].search(base_domain)
+        return sum(lines.mapped('credit'))
+
     def get_labor_cost(self, analytic, first_day, last_day):
         domain = [
             ('account_id', '=', analytic.id),
@@ -54,10 +67,10 @@ class ProjectMisXlsxReport(models.AbstractModel):
         return self._get_amount('account.analytic.line', domain, 'amount', negate=True)
 
     def get_material_cost(self, analytic, first_day, last_day):
-        return self._get_cost_by_account_codes(analytic, first_day, last_day, ['600000%', '602000%'])
+        return self._get_cost_by_account_codes(analytic, first_day, last_day, ['600000%', '602000%']) - self._get_credit_by_account_codes(analytic, first_day, last_day, ['778000%'])
 
     def get_subcontracting_cost(self, analytic, first_day, last_day):
-        return self._get_cost_by_account_codes(analytic, first_day, last_day, ['607000%', '607002%'])
+        return self._get_cost_by_account_codes(analytic, first_day, last_day, ['607000%', '607002%', '623009%', '623010%', '623014%'])
 
     def get_license_cost(self, analytic, first_day, last_day):
         return self._get_cost_by_account_codes(analytic, first_day, last_day, ['621000%', '621006%'])
