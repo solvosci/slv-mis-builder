@@ -134,7 +134,7 @@ class ProjectMisXlsxReport(models.AbstractModel):
 
     def get_income(self, analytic, first_day, last_day):
         margin = self.get_magin(analytic, first_day, last_day)
-        if not margin or margin < 100:
+        if not margin or margin < -100:
             return 0
         expenses = self.get_expenses(analytic, first_day, last_day)
         return expenses / (1 - (margin / 100))
