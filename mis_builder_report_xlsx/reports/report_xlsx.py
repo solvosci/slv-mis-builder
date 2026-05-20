@@ -81,7 +81,7 @@ class ProjectMisXlsxReport(models.AbstractModel):
         ])
 
     def get_inventory_variation_cost(self, analytic, first_day, last_day):
-        domain = [
+        domain_a = [
             ('analytic_account_id', '=', analytic.id),
             ('date', '>=', first_day),
             ('date', '<=', last_day),
@@ -89,7 +89,18 @@ class ProjectMisXlsxReport(models.AbstractModel):
             ('analytic_mrp_from_child', '!=', True),
             ('analytic_mrp_unbuilt', '!=', True),
         ]
-        return self._get_amount('account.move.line', domain, 'debit')
+        cost_a = self._get_amount('account.move.line', domain_a, 'debit')
+
+        domain_b = [
+            ('analytic_account_id', '=', analytic.id),
+            ('date', '>=', first_day),
+            ('date', '<=', last_day),
+            ('account_id.code', 'like', '610000%'),
+            ('analytic_mrp_from_purchase', '=', True),
+            ('analytic_mrp_unbuilt', '!=', True),
+        ]
+        cost_b = self._get_amount('account.move.line', domain_b, 'debit')
+        return cost_a - cost_b
 
     def _get_real_order(self, analytic, first_day, last_day, excluded_products=False, include_products=False):
         domain = [
@@ -130,6 +141,10 @@ class ProjectMisXlsxReport(models.AbstractModel):
             self.get_inventory_variation_cost(analytic, first_day, last_day)
         )
 
+    def get_expenses_formula(self, row, col):
+        letter = openpyxl.utils.get_column_letter(col + 1)
+        return f"=SUM({letter}{row + 4}:{letter}{row + 9})"
+
     def get_billing(self, analytic, first_day, last_day):
         return self._get_cost_by_account_codes(analytic, first_day, last_day, [
             '700000%', '705000%', '710000%', '733000%'
@@ -158,6 +173,10 @@ class ProjectMisXlsxReport(models.AbstractModel):
         result = income - expenses
         return result if result > 0 else 0
 
+    def get_result_formula(self, row, col):
+        letter = openpyxl.utils.get_column_letter(col + 1)
+        return f"={letter}{row + 2}-{letter}{row + 6}"
+
     def get_accumulated_year(self, row, col, month, months):
         if month.month == 1:
             cell = openpyxl.utils.get_column_letter(col + 1)
@@ -180,13 +199,13 @@ class ProjectMisXlsxReport(models.AbstractModel):
             total = 0
 
             if name == _('Result'):
-                total = self.get_result(analytic, first_day, last_day)
+                total = self.get_result_formula(row, col)
             elif name == _('Income'):
                 total = self.get_income(analytic, first_day, last_day)
             elif name == _('Billing'):
                 total = self.get_billing(analytic, first_day, last_day)
             elif name == _('Expense'):
-                total = self.get_expenses(analytic, first_day, last_day)
+                total = self.get_expenses_formula(row, col)
             elif name == _('Labor'):
                 total = self.get_labor_cost(analytic, first_day, last_day)
             elif name == _('Materials'):
