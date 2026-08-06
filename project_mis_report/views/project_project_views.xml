@@ -16,7 +16,7 @@
                             <field name="mis_report_instance_id" readonly="1"/>
                         </group>
                         <group name="mis_report_group2">
-                            <button 
+                            <button
                                 name="auto_create_mis_instance"
                                 string="Autocreate"
                                 type="object"
