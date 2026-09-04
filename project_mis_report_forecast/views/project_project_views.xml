@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="project_mis_report_form_view" model="ir.ui.view">
+        <field name="name">project.project.form</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='mis_report_group2']/parent::group" position="after">
+                <group>
+                    <group name="mis_report_forecast_group">
+                        <field name="mis_report_forecast_template_id" attrs="{'readonly': [('is_group_project_manager', '=', False)]}"/>
+                        <field name="mis_report_forecast_instance_id" readonly="1"/>
+                    </group>
+                    <group name="mis_report_forecast_group2">
+                        <button
+                            name="auto_create_mis_forecast_instance"
+                            string="Autocreate"
+                            type="object"
+                            class="btn-primary"
+                            attrs="{'invisible': ['|', ('is_group_account_manager', '=', False), ('mis_report_forecast_instance_id', '!=', False)]}"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
