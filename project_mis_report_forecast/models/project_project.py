@@ -212,10 +212,21 @@ class ProjectProject(models.Model):
                 get_additional_query_filter=_get_additional_query_filter,
             )
             gastos_closed = real_values_closed.get("gastos", AccountingNone)
-            margen_closed = real_values_closed.get("margen", AccountingNone)
             _logger.info(
-                "[MIS-FORECAST] real_values_closed (ingreso, solo hasta last_close_date): gastos=%s margen=%s",
-                gastos_closed, margen_closed,
+                "[MIS-FORECAST] real_values_closed (ingreso, solo hasta last_close_date): gastos=%s",
+                gastos_closed,
+            )
+
+            margin_closed_items = all_items.filtered(
+                lambda i: i.kpi_expression_id.kpi_id.kpi_type == "margin" and i.closed_month
+            )
+            margen_presupuestado = (
+                sum(margin_closed_items.mapped("amount")) / len(margin_closed_items)
+                if margin_closed_items else 0.0
+            )
+            _logger.info(
+                "[MIS-FORECAST] margen presupuestado (de mis.budget.item, meses cerrados)=%s (sobre %s items)",
+                margen_presupuestado, len(margin_closed_items),
             )
 
             valid_items = all_items.filtered(
@@ -263,10 +274,10 @@ class ProjectProject(models.Model):
                         ppto_kpi_name, raw_val, actual_val,
                     )
                 else:
-                    actual_val = self._forecast_income_from_margin(gastos_closed, margen_closed)
+                    actual_val = self._forecast_income_from_margin(gastos_closed, margen_presupuestado)
                     _logger.info(
-                        "[MIS-FORECAST] KPI income '%s' -> gastos_closed=%s margen_closed=%s actual_val=%s",
-                        ppto_kpi_name, gastos_closed, margen_closed, actual_val,
+                        "[MIS-FORECAST] KPI income '%s' -> gastos_closed=%s margen_presupuestado=%s actual_val=%s",
+                        ppto_kpi_name, gastos_closed, margen_presupuestado, actual_val,
                     )
 
                 items_for_kpi.write({"actual_expense_value": actual_val})
