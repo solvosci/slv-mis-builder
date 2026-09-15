@@ -131,6 +131,28 @@ class ProjectProject(models.Model):
         except (TypeError, ValueError):
             return 0.0
 
+    _FORECAST_REAL_EXPENSE_KEYS = (
+        "mano_de_obra",
+        "materiales",
+        "subcontrataciones",
+        "licencias",
+        "viajes_y_otros",
+        "variacion_existencias",
+    )
+
+    @classmethod
+    def _forecast_real_expenses(cls, values):
+        total = 0.0
+        for key in cls._FORECAST_REAL_EXPENSE_KEYS:
+            raw_val = values.get(key, AccountingNone)
+            if raw_val is AccountingNone or raw_val is None or type(raw_val).__name__ == "DataError":
+                continue
+            try:
+                total += float(raw_val)
+            except (TypeError, ValueError):
+                continue
+        return total
+
     @staticmethod
     def _forecast_income_from_margin(gastos, margen):
         if gastos is AccountingNone or gastos is None or type(gastos).__name__ == "DataError":
@@ -204,26 +226,51 @@ class ProjectProject(models.Model):
                 real_values.get("gastos"), real_values.get("materiales"),
             )
 
-            real_values_closed = report.evaluate(
-                aep,
-                record.date_start,
-                record.last_close_date,
-                get_additional_move_line_filter=_get_additional_move_line_filter,
-                get_additional_query_filter=_get_additional_query_filter,
-            )
-            gastos_closed = real_values_closed.get("gastos", AccountingNone)
-            margen_closed = real_values_closed.get("margen", AccountingNone)
+            margin_closed_items = all_items.filtered(
+                lambda i: i.kpi_expression_id.kpi_id.kpi_type == "margin" and i.closed_month
+            ).sorted(lambda i: i.date_from)
+
+            income_closed_total = 0.0
+            for margin_item in margin_closed_items:
+                month_values = report.evaluate(
+                    aep,
+                    margin_item.date_from,
+                    margin_item.date_to,
+                    get_additional_move_line_filter=_get_additional_move_line_filter,
+                    get_additional_query_filter=_get_additional_query_filter,
+                )
+                gastos_mes = self._forecast_real_expenses(month_values)
+                ingreso_mes = self._forecast_income_from_margin(gastos_mes, margin_item.amount)
+                income_closed_total += ingreso_mes
+                _logger.info(
+                    "[MIS-FORECAST] mes cerrado %s..%s -> gastos=%s margen=%s ingreso=%s",
+                    margin_item.date_from, margin_item.date_to,
+                    gastos_mes, margin_item.amount, ingreso_mes,
+                )
             _logger.info(
-                "[MIS-FORECAST] real_values_closed (ingreso, solo hasta last_close_date): gastos=%s margen=%s",
-                gastos_closed, margen_closed,
+                "[MIS-FORECAST] ingreso real acumulado (suma de %s meses cerrados)=%s",
+                len(margin_closed_items), income_closed_total,
             )
 
             valid_items = all_items.filtered(
                 lambda i: i.kpi_expression_id.kpi_id.kpi_type in ("expense", "income", "margin")
             )
 
-            for kpi_expression in valid_items.mapped("kpi_expression_id"):
-                kpi_type = kpi_expression.kpi_id.kpi_type
+            margin_items = valid_items.filtered(
+                lambda i: i.kpi_expression_id.kpi_id.kpi_type == "margin"
+            )
+            for item in margin_items:
+                item.write({
+                    "actual_expense_value": item.amount,
+                    "forecast_value": item.amount,
+                })
+            _logger.info("[MIS-FORECAST] KPI margin -> %s items fijados a su amount", len(margin_items))
+
+            expense_expressions = valid_items.filtered(
+                lambda i: i.kpi_expression_id.kpi_id.kpi_type == "expense"
+            ).mapped("kpi_expression_id")
+
+            for kpi_expression in expense_expressions:
                 ppto_kpi_name = kpi_expression.kpi_id.name
                 real_kpi_name = (
                     ppto_kpi_name[len("ppto_"):]
@@ -236,69 +283,104 @@ class ProjectProject(models.Model):
                 closed_items_for_kpi = items_for_kpi.filtered(lambda i: i.closed_month)
 
                 _logger.info(
-                    "[MIS-FORECAST] --- KPI '%s' (%s) | items=%s (abiertos=%s, cerrados=%s)",
-                    ppto_kpi_name, kpi_type, len(items_for_kpi), len(open_items_for_kpi), len(closed_items_for_kpi),
+                    "[MIS-FORECAST] --- KPI '%s' (expense) | items=%s (abiertos=%s, cerrados=%s)",
+                    ppto_kpi_name, len(items_for_kpi), len(open_items_for_kpi), len(closed_items_for_kpi),
                 )
-
-                if kpi_type == "margin":
-                    for item in items_for_kpi:
-                        item.write({
-                            "actual_expense_value": item.amount,
-                            "forecast_value": item.amount,
-                        })
-                        _logger.info(
-                            "[MIS-FORECAST] KPI margin '%s' -> item %s (date_from=%s) actual_expense_value=forecast_value=amount=%s",
-                            ppto_kpi_name, item.id, item.date_from, item.amount,
-                        )
-                    continue
 
                 if closed_items_for_kpi:
                     closed_items_for_kpi.write({"forecast_value": 0.0})
 
-                if kpi_type == "expense":
-                    raw_val = real_values.get(real_kpi_name, AccountingNone)
-                    actual_val = self._forecast_safe_float(raw_val)
-                    _logger.info(
-                        "[MIS-FORECAST] KPI expense '%s' -> raw_val=%r actual_val=%s",
-                        ppto_kpi_name, raw_val, actual_val,
-                    )
-                else:
-                    actual_val = self._forecast_income_from_margin(gastos_closed, margen_closed)
-                    _logger.info(
-                        "[MIS-FORECAST] KPI income '%s' -> gastos_closed=%s margen_closed=%s actual_val=%s",
-                        ppto_kpi_name, gastos_closed, margen_closed, actual_val,
-                    )
-
+                raw_val = real_values.get(real_kpi_name, AccountingNone)
+                actual_val = self._forecast_safe_float(raw_val)
                 items_for_kpi.write({"actual_expense_value": actual_val})
 
                 total_budget = sum(items_for_kpi.mapped("amount"))
                 shortfall = total_budget - actual_val
                 _logger.info(
-                    "[MIS-FORECAST] KPI '%s' -> actual_val=%s | total_budget=%s | shortfall=%s",
+                    "[MIS-FORECAST] KPI expense '%s' -> actual_val=%s | total_budget=%s | shortfall=%s",
                     ppto_kpi_name, actual_val, total_budget, shortfall,
                 )
 
                 if not open_items_for_kpi or shortfall <= 0.0:
-                    _logger.info(
-                        "[MIS-FORECAST] KPI '%s' sin meses abiertos o sin shortfall -> forecast_value=0.0",
-                        ppto_kpi_name,
-                    )
                     open_items_for_kpi.write({"forecast_value": 0.0})
                     continue
 
-                if kpi_type == "expense":
-                    open_budget = sum(open_items_for_kpi.mapped("amount"))
-                    if open_budget > 0.0:
-                        for item in open_items_for_kpi:
-                            item.forecast_value = shortfall * item.amount / open_budget
-                    else:
-                        open_items_for_kpi.write({"forecast_value": 0.0})
+                open_budget = sum(open_items_for_kpi.mapped("amount"))
+                if open_budget > 0.0:
+                    for item in open_items_for_kpi:
+                        item.forecast_value = shortfall * item.amount / open_budget
+                        _logger.info(
+                            "[MIS-FORECAST]   item %s (date_from=%s, amount=%s) -> forecast_value=%s",
+                            item.id, item.date_from, item.amount, item.forecast_value,
+                        )
+                else:
+                    open_items_for_kpi.write({"forecast_value": 0.0})
 
+            expense_open_items = valid_items.filtered(
+                lambda i: i.kpi_expression_id.kpi_id.kpi_type == "expense" and not i.closed_month
+            )
+            total_open_expense_forecast = sum(expense_open_items.mapped("forecast_value"))
+            _logger.info(
+                "[MIS-FORECAST] gasto_restante (suma forecast_value de meses abiertos expense)=%s | detalle=%s",
+                total_open_expense_forecast,
+                [(i.id, i.kpi_expression_id.kpi_id.name, i.date_from, i.forecast_value) for i in expense_open_items],
+            )
+
+            income_expressions = valid_items.filtered(
+                lambda i: i.kpi_expression_id.kpi_id.kpi_type == "income"
+            ).mapped("kpi_expression_id")
+
+            for kpi_expression in income_expressions:
+                ppto_kpi_name = kpi_expression.kpi_id.name
+
+                items_for_kpi = valid_items.filtered(lambda i: i.kpi_expression_id == kpi_expression)
+                open_items_for_kpi = items_for_kpi.filtered(lambda i: not i.closed_month)
+                closed_items_for_kpi = items_for_kpi.filtered(lambda i: i.closed_month)
+
+                _logger.info(
+                    "[MIS-FORECAST] --- KPI '%s' (income) | items=%s (abiertos=%s, cerrados=%s)",
+                    ppto_kpi_name, len(items_for_kpi), len(open_items_for_kpi), len(closed_items_for_kpi),
+                )
+
+                if closed_items_for_kpi:
+                    closed_items_for_kpi.write({"forecast_value": 0.0})
+
+                actual_val = income_closed_total
+                items_for_kpi.write({"actual_expense_value": actual_val})
+
+                total_budget = sum(items_for_kpi.mapped("amount"))
+                shortfall = total_budget - actual_val
+                _logger.info(
+                    "[MIS-FORECAST] KPI income '%s' -> actual_val=%s | total_budget=%s | resto_ingresos=%s",
+                    ppto_kpi_name, actual_val, total_budget, shortfall,
+                )
+
+                if not open_items_for_kpi or shortfall <= 0.0:
+                    open_items_for_kpi.write({"forecast_value": 0.0})
+                    continue
+
+                if total_open_expense_forecast > 0.0:
+                    proporcion = shortfall / total_open_expense_forecast
+                    _logger.info(
+                        "[MIS-FORECAST] proporcion = resto_ingresos(%s) / resto_gastos(%s) = %s",
+                        shortfall, total_open_expense_forecast, proporcion,
+                    )
+                    for item in open_items_for_kpi:
+                        gasto_mes = sum(
+                            expense_open_items.filtered(
+                                lambda e: e.date_from == item.date_from
+                            ).mapped("forecast_value")
+                        )
+                        item.forecast_value = gasto_mes * proporcion
+                        _logger.info(
+                            "[MIS-FORECAST]   item %s (date_from=%s) gasto_mes=%s -> forecast_value=%s",
+                            item.id, item.date_from, gasto_mes, item.forecast_value,
+                        )
                 else:
                     open_count = len(open_items_for_kpi)
                     for item in open_items_for_kpi:
                         item.forecast_value = shortfall / open_count
                         _logger.info(
-                            "[MIS-FORECAST]   item %s (date_from=%s) -> forecast_value=%s",
+                            "[MIS-FORECAST]   item %s (date_from=%s) sin resto_gastos -> equitativo forecast_value=%s",
                             item.id, item.date_from, item.forecast_value,
                         )
