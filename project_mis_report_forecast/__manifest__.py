@@ -14,6 +14,7 @@
     "depends": ["project_mis_report_budget"],
     "data": [
         "views/project_project_views.xml",
+        "views/mis_budget.xml",
     ],
     "installable": True,
 }
