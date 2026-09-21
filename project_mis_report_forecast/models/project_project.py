@@ -242,7 +242,7 @@ class ProjectProject(models.Model):
                 lambda i: i.kpi_expression_id.kpi_id.kpi_type in ("expense", "income", "margin")
             )
 
-            # Margin: no computation, just mirror the budgeted amount.
+            # 1. MARGIN: no computation, just mirror the budgeted amount
             margin_items = valid_items.filtered(
                 lambda i: i.kpi_expression_id.kpi_id.kpi_type == "margin"
             )
@@ -314,7 +314,7 @@ class ProjectProject(models.Model):
             for kpi_expression in expense_expressions:
                 budget_kpi_name = kpi_expression.kpi_id.name
                 items_for_kpi = valid_items.filtered(lambda i: i.kpi_expression_id == kpi_expression)
-                open_items = items_for_kpi.filtered(lambda i: not i.closed_month)
+                open_items = items_for_kpi.filtered(lambda i: not i.closed_month).sorted(key=lambda i: i.date_from)
                 closed_items = items_for_kpi.filtered(lambda i: i.closed_month)
 
                 _logger.info(
@@ -335,22 +335,49 @@ class ProjectProject(models.Model):
                     budget_kpi_name, actual_value, total_budget, shortfall,
                 )
 
-                if not open_items or shortfall <= 0.0:
-                    open_items.write({"forecast_value": 0.0})
+                # Limpiamos previamente todos los abiertos
+                open_items.write({"forecast_value": 0.0})
+
+                if shortfall <= 0.0:
                     continue
 
-                open_budget = sum(open_items.mapped("amount"))
+                open_items_with_budget = open_items.filtered(lambda i: i.amount > 0.0)
+                open_items_without_budget = open_items - open_items_with_budget
+                if open_items_without_budget:
+                    open_items_without_budget.write({"forecast_value": 0.0})
+
+                open_budget = sum(open_items_with_budget.mapped("amount"))
+
                 if open_budget > 0.0:
-                    for item in open_items:
+                    # Caso A: Reparto proporcional en los meses abiertos con presupuesto
+                    for item in open_items_with_budget:
                         item.forecast_value = shortfall * item.amount / open_budget
                         _logger.info(
                             "[MIS-FORECAST]   item %s (date_from=%s, amount=%s) -> forecast_value=%s",
                             item.id, item.date_from, item.amount, item.forecast_value,
                         )
                 else:
-                    share = shortfall / len(open_items)
-                    for item in open_items:
-                        item.forecast_value = share
+                    # Caso B: No hay presupuesto en los meses siguientes o no existen items para este KPI.
+                    # Reutilizamos las fechas del primer mes abierto del KPI de 'margin'.
+                    next_margin_items = margin_items.filtered(lambda m: not m.closed_month).sorted(key=lambda m: m.date_from)
+                    if next_margin_items:
+                        target_margin = next_margin_items[0]
+                        target_item = items_for_kpi.filtered(lambda i: i.date_from == target_margin.date_from)
+                        if not target_item:
+                            target_item = self.env["mis.budget.item"].create({
+                                "budget_id": target_margin.budget_id.id,
+                                "kpi_expression_id": kpi_expression.id,
+                                "analytic_account_id": project.analytic_account_id.id,
+                                "date_from": target_margin.date_from,
+                                "date_to": target_margin.date_to,
+                                "amount": 0.0,
+                                "closed_month": False,
+                                "forecast_value": shortfall,
+                            })
+                            _logger.info("[MIS-FORECAST] Created budget item %s for KPI %s on %s", target_item.id, budget_kpi_name, target_margin.date_from)
+                        else:
+                            target_item[0].forecast_value = shortfall
+                            _logger.info("[MIS-FORECAST] Assigned shortfall %s to item %s on %s", shortfall, target_item[0].id, target_margin.date_from)
 
             expense_open_items = valid_items.filtered(
                 lambda i: i.kpi_expression_id.kpi_id.kpi_type == "expense" and not i.closed_month
@@ -367,7 +394,7 @@ class ProjectProject(models.Model):
             for kpi_expression in income_expressions:
                 budget_kpi_name = kpi_expression.kpi_id.name
                 items_for_kpi = valid_items.filtered(lambda i: i.kpi_expression_id == kpi_expression)
-                open_items = items_for_kpi.filtered(lambda i: not i.closed_month)
+                open_items = items_for_kpi.filtered(lambda i: not i.closed_month).sorted(key=lambda i: i.date_from)
                 closed_items = items_for_kpi.filtered(lambda i: i.closed_month)
 
                 _logger.info(
@@ -388,8 +415,9 @@ class ProjectProject(models.Model):
                     budget_kpi_name, actual_value, total_budget, shortfall,
                 )
 
-                if not open_items or shortfall <= 0.0:
-                    open_items.write({"forecast_value": 0.0})
+                open_items.write({"forecast_value": 0.0})
+
+                if shortfall <= 0.0:
                     continue
 
                 if total_open_expense_forecast > 0.0:
@@ -400,12 +428,30 @@ class ProjectProject(models.Model):
                                 lambda e: e.date_from == item.date_from
                             ).mapped("forecast_value")
                         )
-                        item.forecast_value = month_expense * proportion
-                        _logger.info(
-                            "[MIS-FORECAST]   item %s (date_from=%s) month_expense=%s -> forecast_value=%s",
-                            item.id, item.date_from, month_expense, item.forecast_value,
-                        )
+                        if month_expense > 0.0:
+                            item.forecast_value = month_expense * proportion
+                            _logger.info(
+                                "[MIS-FORECAST]   item %s (date_from=%s) month_expense=%s -> forecast_value=%s",
+                                item.id, item.date_from, month_expense, item.forecast_value,
+                            )
+                        else:
+                            item.forecast_value = 0.0
                 else:
-                    share = shortfall / len(open_items)
-                    for item in open_items:
-                        item.forecast_value = share
+                    # Si no hay previsión de gasto en los meses futuros, asignamos todo al primer mes abierto del KPI margin
+                    next_margin_items = margin_items.filtered(lambda m: not m.closed_month).sorted(key=lambda m: m.date_from)
+                    if next_margin_items:
+                        target_margin = next_margin_items[0]
+                        target_item = items_for_kpi.filtered(lambda i: i.date_from == target_margin.date_from)
+                        if not target_item:
+                            target_item = self.env["mis.budget.item"].create({
+                                "budget_id": target_margin.budget_id.id,
+                                "kpi_expression_id": kpi_expression.id,
+                                "analytic_account_id": project.analytic_account_id.id,
+                                "date_from": target_margin.date_from,
+                                "date_to": target_margin.date_to,
+                                "amount": 0.0,
+                                "closed_month": False,
+                                "forecast_value": shortfall,
+                            })
+                        else:
+                            target_item[0].forecast_value = shortfall
