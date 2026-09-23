@@ -1,5 +1,7 @@
-This addon is based on project_mis_report.
+This module automates the calculation and synchronization of project budget forecasts using **MIS Builder** reports.
 
-With this addon you can generate a forecast report for the next
-months based on the current data of the project, by creating mis.budget.items to keep record of
-current closed/open months and with that, you can adapt KPI's and other metrics to the current situation of the project.
+Key Capabilities:
+* Dynamically manages budget line status (open vs. closed) based on the project's last closing date (``last_close_date``).
+* Evaluates closed periods period-by-period to retrieve accurate historical expenses and revenues.
+* Calculates shortfalls between original budget and real actuals, prorating remaining forecast values across open future months.
+* Automatically updates or generates forecast report instances (``mis.report.instance``) upon project changes.
