@@ -112,9 +112,9 @@ class ProjectProject(models.Model):
                     and len(instance.period_ids) >= 2
                     and project.date + relativedelta(months=1) > instance.period_ids[-2].date_to
                 ):
-                    instance.period_ids.filtered(lambda x: x.source == "sumcol").unlink()
-                    instance.unlink()
-                    project.auto_create_mis_forecast_instance()
+                    instance.period_ids.sudo().filtered(lambda x: x.source == "sumcol").unlink()
+                    instance.sudo().unlink()
+                    project.sudo().auto_create_mis_forecast_instance()
 
         if "last_close_date" in vals and vals["last_close_date"]:
             self._update_budget_item_closed_month()
