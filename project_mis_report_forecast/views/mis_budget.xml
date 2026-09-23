@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="mis_budget_item_tree_view" model="ir.ui.view">
+        <field name="name">mis.budget.item.tree.view (in project_mis_report_forecast)</field>
+        <field name="model">mis.budget.item</field>
+        <field name="inherit_id" ref="mis_builder_budget.mis_budget_item_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_to']" position="after">
+                <field name="closed_month" groups="base.group_no_one"/>
+                <field name="forecast_value" groups="base.group_no_one"/>
+                <field name="actual_expense_value" groups="base.group_no_one"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
