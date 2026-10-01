@@ -257,12 +257,7 @@ class ProjectProject(models.Model):
                 lambda i: i.kpi_expression_id.kpi_id.kpi_type == "income"
             ).mapped("kpi_expression_id")
 
-            # Full catalog of budgetable expense KPIs defined on the report,
-            # regardless of whether any mis.budget.item was actually created
-            # for them. Used for the income/margin derivation below, so a
-            # category without budget lines (e.g. "mano de obra" never
-            # budgeted for this project) is not silently dropped from the
-            # real total expense.
+            # Full catalog of budgetable expense KPIs defined on the report
             expense_kpi_catalog = report.kpi_ids.filtered(
                 lambda k: k.kpi_type == "expense" and k.budgetable
             )
@@ -272,11 +267,6 @@ class ProjectProject(models.Model):
                 key=lambda i: i.date_from
             )
 
-            # Both expense and income are recalculated month by month for
-            # every closed period, instead of a single aggregate evaluate()
-            # call: this is what makes the "expense wasn't being
-            # recalculated on close" issue go away, and keeps expense/income
-            # consistent with each other.
             total_income_closed = 0.0
 
             for margin_item in margin_closed_items:
@@ -308,9 +298,7 @@ class ProjectProject(models.Model):
                 len(margin_closed_items), total_income_closed,
             )
 
-            # Expense: shortfall per budget KPI, using that KPI's own
-            # accumulated real consumption (materiales includes
-            # variacion_existencias, per EXPENSE_REAL_VALUE_EXTRA_COMPONENTS).
+            # Expense: shortfall per budget KPI
             for kpi_expression in expense_expressions:
                 budget_kpi_name = kpi_expression.kpi_id.name
                 items_for_kpi = valid_items.filtered(lambda i: i.kpi_expression_id == kpi_expression)
@@ -335,7 +323,6 @@ class ProjectProject(models.Model):
                     budget_kpi_name, actual_value, total_budget, shortfall,
                 )
 
-                # Limpiamos previamente todos los abiertos
                 open_items.write({"forecast_value": 0.0})
 
                 if shortfall <= 0.0:
@@ -388,9 +375,7 @@ class ProjectProject(models.Model):
                 total_open_expense_forecast,
             )
 
-            # Income: closed months use the margin-derived total; open
-            # months are prorated proportionally to each month's expense
-            # forecast (falling back to an even split with no expense).
+            # Income: closed months use the margin-derived total; open months prorated
             for kpi_expression in income_expressions:
                 budget_kpi_name = kpi_expression.kpi_id.name
                 items_for_kpi = valid_items.filtered(lambda i: i.kpi_expression_id == kpi_expression)
