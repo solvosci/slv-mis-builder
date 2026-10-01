@@ -198,7 +198,7 @@ class ProjectProject(models.Model):
             return 0.0
         return abs(expense / denominator)
 
-# ------------------------------------------------------------------
+    # ------------------------------------------------------------------
     # Forecast calculation
     # ------------------------------------------------------------------
     def _update_budget_item_forecast_value(self):
@@ -298,13 +298,15 @@ class ProjectProject(models.Model):
                 len(margin_closed_items), total_income_closed,
             )
 
-            # DETERMINAR EL MES DESTINO GLOBAL PARA EL SOBRANTE:
-            # 1. Buscamos el último mes registrado abierto en el proyecto.
-            # 2. Si no hay meses abiertos, calculamos el mes siguiente a last_close_date.
-            open_global_items = valid_items.filtered(lambda i: not i.closed_month).sorted(key=lambda i: i.date_from)
-            if open_global_items:
-                target_date_from = open_global_items[-1].date_from
-                target_date_to = open_global_items[-1].date_to
+            # DETERMINAR EL MES DESTINO GLOBAL SOLO EN BASE A INGRESO O GASTO:
+            # Filtramos expresamente los ítems abiertos que corresponden únicamente a 'expense' o 'income'
+            open_expense_income_items = valid_items.filtered(
+                lambda i: not i.closed_month and i.kpi_expression_id.kpi_id.kpi_type in ("expense", "income")
+            ).sorted(key=lambda i: i.date_from)
+
+            if open_expense_income_items:
+                target_date_from = open_expense_income_items[-1].date_from
+                target_date_to = open_expense_income_items[-1].date_to
             else:
                 target_date_from = project.last_close_date + relativedelta(days=1)
                 target_date_to = target_date_from + relativedelta(months=1, days=-1)
@@ -355,7 +357,7 @@ class ProjectProject(models.Model):
                             item.id, item.date_from, item.amount, item.forecast_value,
                         )
                 else:
-                    # Sin presupuesto futuro: colocar todo el sobrante en el ÚLTIMO mes general (o posterior)
+                    # Sin presupuesto futuro: colocar todo el sobrante en el ÚLTIMO mes de Ingreso/Gasto (o posterior)
                     target_item = items_for_kpi.filtered(lambda i: i.date_from == target_date_from)
                     if not target_item:
                         target_budget_id = all_items[0].budget_id.id
