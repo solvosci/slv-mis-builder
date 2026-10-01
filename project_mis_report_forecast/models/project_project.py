@@ -44,59 +44,10 @@ class ProjectProject(models.Model):
     # Setup
     # ------------------------------------------------------------------
     def auto_create_mis_forecast_instance(self):
-        self.ensure_one()
-        if not self.analytic_account_id:
-            raise ValidationError(_("The Analytical Account field must be covered"))
-        if not self.date_start or not self.date:
-            raise ValidationError(
-                _("The Dates field must be covered before generating the MIS report.")
+            self.ensure_one()
+            self.mis_report_forecast_instance_id = self._create_mis_report_instance_helper(
+                self.mis_report_forecast_template_id, _('Forecast')
             )
-        if not self.mis_report_forecast_template_id:
-            raise ValidationError(
-                _("You must set a MIS Forecast Report Template before generating the report.")
-            )
-
-        instance = self.env["mis.report.instance"].create(
-            {
-                "name": _("Forecast: %s") % self.name,
-                "report_id": self.mis_report_forecast_template_id.id,
-                "comparison_mode": True,
-                "date": self.date_start,
-                "analytic_account_id": self.analytic_account_id.id,
-            }
-        )
-
-        months_range = self.generate_monthly_dates()
-        for count_month, month in enumerate(months_range):
-            instance.period_ids.create(
-                {
-                    "report_instance_id": instance.id,
-                    "name": "%s/%s" % (month.strftime("%m"), month.strftime("%Y")),
-                    "source": "actuals",
-                    "mode": "relative",
-                    "type": "m",
-                    "offset": count_month,
-                    "duration": 1,
-                }
-            )
-
-        total_period_id = instance.period_ids.create(
-            {
-                "report_instance_id": instance.id,
-                "name": "TOTAL",
-                "source": "sumcol",
-                "mode": "none",
-            }
-        )
-        for period in instance.period_ids.filtered(lambda x: x.source == "actuals"):
-            self.env["mis.report.instance.period.sum"].create(
-                {
-                    "sign": "+",
-                    "period_id": total_period_id.id,
-                    "period_to_sum_id": period.id,
-                }
-            )
-        self.mis_report_forecast_instance_id = instance
 
     # ------------------------------------------------------------------
     # write()
@@ -121,10 +72,6 @@ class ProjectProject(models.Model):
             self._update_budget_item_forecast_value()
 
         return res
-
-    def action_mis_report_forecast_preview(self):
-        self.ensure_one()
-        return self.mis_report_forecast_instance_id.preview()
 
     # ------------------------------------------------------------------
     # Closed month flag
@@ -198,7 +145,7 @@ class ProjectProject(models.Model):
             return 0.0
         return abs(expense / denominator)
 
-# ------------------------------------------------------------------
+    # ------------------------------------------------------------------
     # Forecast calculation
     # ------------------------------------------------------------------
     def _update_budget_item_forecast_value(self):
@@ -298,13 +245,15 @@ class ProjectProject(models.Model):
                 len(margin_closed_items), total_income_closed,
             )
 
-            # DETERMINAR EL MES DESTINO GLOBAL PARA EL SOBRANTE:
-            # 1. Buscamos el último mes registrado abierto en el proyecto.
-            # 2. Si no hay meses abiertos, calculamos el mes siguiente a last_close_date.
-            open_global_items = valid_items.filtered(lambda i: not i.closed_month).sorted(key=lambda i: i.date_from)
-            if open_global_items:
-                target_date_from = open_global_items[-1].date_from
-                target_date_to = open_global_items[-1].date_to
+            # DETERMINAR EL MES DESTINO GLOBAL SOLO EN BASE A INGRESO O GASTO:
+            # Filtramos expresamente los ítems abiertos que corresponden únicamente a 'expense' o 'income'
+            open_expense_income_items = valid_items.filtered(
+                lambda i: not i.closed_month and i.kpi_expression_id.kpi_id.kpi_type in ("expense", "income")
+            ).sorted(key=lambda i: i.date_from)
+
+            if open_expense_income_items:
+                target_date_from = open_expense_income_items[-1].date_from
+                target_date_to = open_expense_income_items[-1].date_to
             else:
                 target_date_from = project.last_close_date + relativedelta(days=1)
                 target_date_to = target_date_from + relativedelta(months=1, days=-1)
@@ -355,7 +304,7 @@ class ProjectProject(models.Model):
                             item.id, item.date_from, item.amount, item.forecast_value,
                         )
                 else:
-                    # Sin presupuesto futuro: colocar todo el sobrante en el ÚLTIMO mes general (o posterior)
+                    # Sin presupuesto futuro: colocar todo el sobrante en el ÚLTIMO mes de Ingreso/Gasto (o posterior)
                     target_item = items_for_kpi.filtered(lambda i: i.date_from == target_date_from)
                     if not target_item:
                         target_budget_id = all_items[0].budget_id.id
