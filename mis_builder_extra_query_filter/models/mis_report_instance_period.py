@@ -26,4 +26,7 @@ class MisReportInstancePeriod(models.Model):
         pol = self.env.ref("purchase.model_purchase_order_line", raise_if_not_found=False)
         if pol:
             ret_dict.update({pol.id: [("account_analytic_id", "=", analytic_account_id)]})
+        project = self.env.ref("project.model_project_project", raise_if_not_found=False)
+        if project:
+            ret_dict.update({project.id: [("analytic_account_id", "=", analytic_account_id)]})
         return ret_dict
