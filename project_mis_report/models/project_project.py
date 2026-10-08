@@ -11,20 +11,19 @@ class ProjectProject(models.Model):
     _inherit = "project.project"
 
     mis_report_template_id = fields.Many2one('mis.report', string="Mis Report Template")
+    pl_report_template_id = fields.Many2one('mis.report', string="Profit and Loss Report Template")
     mis_report_instance_id = fields.Many2one('mis.report.instance', string="Mis Report")
+    pl_report_instance_id = fields.Many2one('mis.report.instance', string="Profit and Loss Report Instance")
     is_group_account_manager = fields.Boolean(compute='_compute_is_group_account_manager')
     is_group_project_manager = fields.Boolean(compute='_compute_is_group_project_manager')
 
     def _compute_is_group_project_manager(self):
-        self.write({
-            "is_group_project_manager": self.user_has_groups("project.group_project_manager"),
-        })
+        for record in self:
+            record.is_group_project_manager = record.user_has_groups("project.group_project_manager")
 
     def _compute_is_group_account_manager(self):
-        self.write({
-            "is_group_account_manager": self.user_has_groups("account.group_account_manager"),
-        })
-
+        for record in self:
+            record.is_group_account_manager = record.user_has_groups("account.group_account_manager")
     def generate_monthly_dates(self):
         result = []
         current_date = self.date_start.replace(day=1)
@@ -36,7 +35,7 @@ class ProjectProject(models.Model):
             current_date += relativedelta(months=1)
         return result
 
-    def auto_create_mis_instance(self):
+    def _create_mis_report_instance_helper(self, template_id, name_prefix):
         self.ensure_one()
         if not self.analytic_account_id:
             raise ValidationError(
@@ -44,20 +43,19 @@ class ProjectProject(models.Model):
             )
         if not self.date_start or not self.date:
             raise ValidationError(_('The Dates field must be covered before generating the MIS report.'))
-        
-        instance_id = self.mis_report_instance_id.create({
-            'name': _('Project: %s') % self.name,
-            'report_id': self.mis_report_template_id.id,
+
+        instance_id = self.env['mis.report.instance'].create({
+            'name': _('%s: %s') % (name_prefix, self.name),
+            'report_id': template_id.id,
             'comparison_mode': True,
             'date': self.date_start,
-            'analytic_account_id': self.analytic_account_id.id
+            'analytic_account_id': self.analytic_account_id.id,
         })
 
         months_range = self.generate_monthly_dates()
 
-        count_month = 0
-        for month in months_range:
-            period_id = instance_id.period_ids.create({
+        for count_month, month in enumerate(months_range):
+            self.env['mis.report.instance.period'].create({
                 'report_instance_id': instance_id.id,
                 'name': '%s/%s' % (month.strftime("%m"), month.strftime("%Y")),
                 'source': 'actuals',
@@ -66,9 +64,8 @@ class ProjectProject(models.Model):
                 'offset': count_month,
                 'duration': 1,
             })
-            count_month += 1
 
-        total_period_id = instance_id.period_ids.create({
+        total_period_id = self.env['mis.report.instance.period'].create({
             'report_instance_id': instance_id.id,
             'name': 'TOTAL',
             'source': 'sumcol',
@@ -81,16 +78,32 @@ class ProjectProject(models.Model):
                 'period_to_sum_id': period_id.id,
             })
 
-        self.mis_report_instance_id = instance_id
+        return instance_id
+
+    def auto_create_mis_instance(self):
+        self.ensure_one()
+        self.mis_report_instance_id = self._create_mis_report_instance_helper(
+            self.mis_report_template_id, _('Project')
+        )
+
+    def auto_create_pl_instance(self):
+        self.ensure_one()
+        self.pl_report_instance_id = self._create_mis_report_instance_helper(
+            self.pl_report_template_id, _('Profit and Loss')
+        )
 
     def write(self, vals):
         res = super().write(vals)
         if 'date' in vals and vals['date']:
-            for record in self.filtered(lambda x: x.mis_report_instance_id):
-                if record.date + relativedelta(months=1) > record.mis_report_instance_id.period_ids[-2].date_to:
+            for record in self:
+                if record.mis_report_instance_id and record.date + relativedelta(months=1) > record.mis_report_instance_id.period_ids[-2].date_to:
                     record.mis_report_instance_id.period_ids.filtered(lambda x: x.source == 'sumcol').unlink()
                     record.mis_report_instance_id.unlink()
                     record.auto_create_mis_instance()
+                if record.pl_report_instance_id and record.date + relativedelta(months=1) > record.pl_report_instance_id.period_ids[-2].date_to:
+                    record.pl_report_instance_id.period_ids.filtered(lambda x: x.source == 'sumcol').unlink()
+                    record.pl_report_instance_id.unlink()
+                    record.auto_create_pl_instance()
         return res
 
     def action_mis_report_preview(self):
