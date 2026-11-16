@@ -44,10 +44,59 @@ class ProjectProject(models.Model):
     # Setup
     # ------------------------------------------------------------------
     def auto_create_mis_forecast_instance(self):
-            self.ensure_one()
-            self.mis_report_forecast_instance_id = self._create_mis_report_instance_helper(
-                self.mis_report_forecast_template_id, _('Forecast')
+        self.ensure_one()
+        if not self.analytic_account_id:
+            raise ValidationError(_("The Analytical Account field must be covered"))
+        if not self.date_start or not self.date:
+            raise ValidationError(
+                _("The Dates field must be covered before generating the MIS report.")
             )
+        if not self.mis_report_forecast_template_id:
+            raise ValidationError(
+                _("You must set a MIS Forecast Report Template before generating the report.")
+            )
+
+        instance = self.env["mis.report.instance"].create(
+            {
+                "name": _("Forecast: %s") % self.name,
+                "report_id": self.mis_report_forecast_template_id.id,
+                "comparison_mode": True,
+                "date": self.date_start,
+                "analytic_account_id": self.analytic_account_id.id,
+            }
+        )
+
+        months_range = self.generate_monthly_dates()
+        for count_month, month in enumerate(months_range):
+            instance.period_ids.create(
+                {
+                    "report_instance_id": instance.id,
+                    "name": "%s/%s" % (month.strftime("%m"), month.strftime("%Y")),
+                    "source": "actuals",
+                    "mode": "relative",
+                    "type": "m",
+                    "offset": count_month,
+                    "duration": 1,
+                }
+            )
+
+        total_period_id = instance.period_ids.create(
+            {
+                "report_instance_id": instance.id,
+                "name": "TOTAL",
+                "source": "sumcol",
+                "mode": "none",
+            }
+        )
+        for period in instance.period_ids.filtered(lambda x: x.source == "actuals"):
+            self.env["mis.report.instance.period.sum"].create(
+                {
+                    "sign": "+",
+                    "period_id": total_period_id.id,
+                    "period_to_sum_id": period.id,
+                }
+            )
+        self.mis_report_forecast_instance_id = instance
 
     # ------------------------------------------------------------------
     # write()
